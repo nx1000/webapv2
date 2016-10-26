@@ -1,0 +1,49 @@
+<ion-header-bar align-title="center" class="bar-positive">
+  <button class="button icon ion-android-search" ng-click="gotoFilter()"></button>
+  <h1 class="title">Emerald Approval</h1>
+  <button class="button icon ion-android-exit" ng-click="gotoLogin()"></button>
+</ion-header-bar>
+<div class="bar bar-subheader bar-dark">
+  <div class="button-bar">
+  <a class="button icon ion-android-checkbox-outline" ng-click="showConfirm()"></a>
+  <a class="button icon ion-android-arrow-back"></a>
+  <a class="button icon ion-android-close"></a>
+</div>
+
+</div>
+<ion-view view-title="Emerald Approval" name="main-view" data-ng-init="refreshData()">
+  <ion-content class="has-subheader">
+        <!-- <ion-checkbox ng-repeat="item in messages" ng-click="toggle(item,selected)">
+          <div class="row">
+            <div class="col-80">
+            <strong>{{item.trno}}&nbsp; (L{{item.lvl}})</strong>
+
+
+            <h4>{{item.trdt | date : 'yyyy-MM-dd'}}</h4><span class="ng-hide">{{item.trtpcd}}</span>
+            <p>{{item.trdesc}}&nbsp;-&nbsp;<strong>{{item.ltramt | currency : "IDR"}}</strong></p>
+          </div>
+            <div class="col">
+            <button class="button button-clear button-positive">
+              Options
+            </button>
+            <div>
+            <div>
+      </ion-checkbox> -->
+
+      <div class="card" ng-repeat="item in messages">
+
+        <div class="item item-content" style="padding:0px;">
+          <ion-checkbox><strong>{{item.trno}}&nbsp; (L{{item.lvl}})</strong></ion-checkbox>
+        </div>
+        <div class="item item-button-right">
+          <p>{{item.trdt | date : 'yyyy-MM-dd'}}</p>
+          <p>{{item.trdesc}}&nbsp;-&nbsp;{{item.ltramt | currency : "IDR":0}}</p>
+
+          <button class="button" ng-click="showaction(item.trno,item.trtpcd)">
+            <i class="icon ion-android-funnel"></i>
+          </button>
+        </div>
+      </div>
+  </ion-content>
+
+</ion-view>
