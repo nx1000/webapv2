@@ -57,6 +57,7 @@ app.post('/reject', function(req, res) {
     console.log('rejecting ' + req.body.trno);
     doReject(req.body, function(hasilnya) {
         console.log('hasilnya post reject: ' + hasilnya)
+        res.header('Access-Control-Allow-Origin', '*');
         res.send(hasilnya);
     });
 
@@ -119,12 +120,12 @@ function refreshHeader(user, callback) { //getSQL menerima req.body ke dalam var
     // var querystr = "SELECT * FROM gnsystem";
 
 
-    connection.query(querystr, function(err, result, fields) { // dan meng-eksekusi        
+    connection.query(querystr, function(err, result, fields) { // dan meng-eksekusi
 
         // console.log(result[0].foprd);
         console.log(result.length);
         json = JSON.stringify(result); // mengkonversi menjadi json
-        callback(json); // dan mengembalikan ke pemanggilnya                                     
+        callback(json); // dan mengembalikan ke pemanggilnya
         connection.end();
     });
 

@@ -26,6 +26,7 @@ angular.module('starter', ['ionic'])
   // $rootScope.myHost = 'http://192.168.43.225:8085/';
   $state.transitionTo('login');
 
+
 })
 
 .config(['$stateProvider', function($stateProvider) {
@@ -66,7 +67,10 @@ angular.module('starter', ['ionic'])
 
 .controller('AppCtrl', function($scope, $q, $http, $state, $rootScope, $ionicActionSheet, $timeout, $ionicPopup){
 
-  $scope.userid = '';
+  // $scope.userid = "";
+  // $scope.userpass="";
+
+  $scope.data = [];
 
 
   $scope.refreshData = function() {
@@ -83,7 +87,7 @@ angular.module('starter', ['ionic'])
 
   $scope.login = function(form) {
 
-     $scope.loggedUser = form.userid;
+    //  $scope.loggedUser = form.userid;
 
       var canceler = $q.defer();
       $http.get($rootScope.myHost + 'login/' + form.userid + '/' + form.userpass, { timeout: canceler.promise })
@@ -107,6 +111,9 @@ angular.module('starter', ['ionic'])
                   // $scope.judul = $cookies.get('userid');
               }
               console.log($scope.messages);
+
+              form.userid="";
+              form.userpass="";
 
 
           });
@@ -134,7 +141,7 @@ angular.module('starter', ['ionic'])
     // console.log(item.trno);
   };
 
-  $scope.showaction = function(trno,trtpcd) {
+  $scope.showaction = function(trno,trtpcd,deptcd) {
 
    // Show the action sheet
    var hideSheet = $ionicActionSheet.show({
@@ -157,6 +164,15 @@ angular.module('starter', ['ionic'])
          $scope.refreshDetail()
          $state.transitionTo("detail");
        }
+
+       if (index==1) {
+         $scope.selectedTrno = trno;
+         $scope.selectedTrtpcd = trtpcd;
+         $scope.selectedDeptcd = deptcd;
+         $scope.refreshStatus();
+         $state.transitionTo('status');
+       }
+
        return true;
      }
    });
@@ -188,7 +204,7 @@ angular.module('starter', ['ionic'])
  };
 
  // A confirm dialog
- $scope.showConfirm = function() {
+ $scope.showConfirm = function(item) {
    var confirmPopup = $ionicPopup.confirm({
      title: 'Are you sure?',
      template: 'Approve selected item(s)'
@@ -197,6 +213,7 @@ angular.module('starter', ['ionic'])
    confirmPopup.then(function(res) {
      if(res) {
        console.log('You are sure');
+       $scope.doApprove(item);
      } else {
        console.log('You are not sure');
      }
@@ -222,6 +239,135 @@ angular.module('starter', ['ionic'])
              });
 
      }
+ };
+
+
+ $scope.showPopupReturn = function(item) {
+  $scope.data = {};
+
+  // An elaborate, custom popup
+  var myPopup = $ionicPopup.show({
+    template: '<input type="text" ng-model="data.reason">',
+    title: 'Returning selected item(s)?',
+    subTitle: 'Give me a reason',
+    scope: $scope,
+    buttons: [
+      { text: 'No' },
+      {
+        text: '<b>Yes</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.reason) {
+            //don't allow the user to close unless he enters wifi password
+            e.preventDefault();
+          } else {
+            // return $scope.data.reason;
+            $scope.doReturn(item)
+
+          }
+        }
+      }
+    ]
+  });
+
+  myPopup.then(function(res) {
+    console.log('Tapped!', res);
+  });
+
+
+ };
+
+ $scope.doReturn = function(item) {
+
+     for (var i = 0; i < item.length; i++) {
+         console.log(item[i]);
+         var canceler = $q.defer();
+         $http.post($rootScope.myHost + 'return/', {
+                 'trtpcd': item[i].trtpcd,
+                 'lvl': item[i].lvl,
+                 'trno': item[i].trno,
+                 'notes': $scope.returnNotes,
+                 'userid': $scope.namauser
+             })
+             .success(function(data) {
+                 $scope.sukses = "yes";
+                 console.log('kiriman dari nodejs (return): ' + data);
+                 $scope.refreshData();
+             });
+
+     }
+ };
+
+ $scope.showPopupReject = function(item) {
+  $scope.data = {};
+
+  // An elaborate, custom popup
+  var myPopup = $ionicPopup.show({
+    template: '<input type="text" ng-model="data.reason">',
+    title: 'Rejecting selected item(s)?',
+    subTitle: 'Give me a reason',
+    scope: $scope,
+    buttons: [
+      { text: 'No' },
+      {
+        text: '<b>Yes</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.reason) {
+            //don't allow the user to close unless he enters wifi password
+            e.preventDefault();
+          } else {
+            // return $scope.data.reason;
+            $scope.doReject(item)
+
+          }
+        }
+      }
+    ]
+  });
+
+  myPopup.then(function(res) {
+    console.log('Tapped!', res);
+  });
+
+
+ };
+
+
+ $scope.doReject = function(item) {
+
+     for (var i = 0; i < item.length; i++) {
+         console.log(item[i]);
+         var canceler = $q.defer();
+         $http.post($rootScope.myHost + 'reject/', {
+                 'trtpcd': item[i].trtpcd,
+                 'lvl': item[i].lvl,
+                 'trno': item[i].trno,
+                 'notes': $scope.rejectNotes,
+                 'userid': $scope.namauser
+             })
+             .success(function(data) {
+                 $scope.sukses = "yes";
+                 console.log('kiriman dari nodejs (reject): ' + data);
+                 $scope.refreshData();
+
+             });
+
+     }
+ };
+
+ $scope.refreshStatus = function() {
+
+     var canceler = $q.defer();
+     $http.post($rootScope.myHost + 'status/', {
+             'trno': $scope.selectedTrno,
+             'trtpcd': $scope.selectedTrtpcd,
+             'deptcd': $scope.selectedDeptcd
+         })
+         .success(function(data) {
+             $scope.approvalStatus = data;             
+         });
+
  };
 
 
