@@ -22,8 +22,9 @@ angular.module('starter', ['ionic'])
     }
   });
 
-  $rootScope.myHost = 'http://192.168.1.103:8085/';
+  // $rootScope.myHost = 'http://192.168.1.103:8085/';
   // $rootScope.myHost = 'http://192.168.43.225:8085/';
+  $rootScope.myHost = 'http://198.199.111.105:8085/';
   $state.transitionTo('login');
 
 
@@ -365,7 +366,7 @@ angular.module('starter', ['ionic'])
              'deptcd': $scope.selectedDeptcd
          })
          .success(function(data) {
-             $scope.approvalStatus = data;             
+             $scope.approvalStatus = data;
          });
 
  };
